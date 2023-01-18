@@ -6,7 +6,7 @@ import { GoogleMapsAPIWrapper } from "@agm/core";
 
 export const environment = {
   production: false,
-  GoogleMapsAPI_key:'AIzaSyANz1hf2rRtU8et_m0h-YCKU5S5MHa6ce0'
+  GoogleMapsAPI_key:''
 };
 
 /*
