@@ -1,0 +1,7 @@
+<div *ngIf="showModal" class="alert-modal">
+    <div [class]="type" role="alert">{{ message }}
+        <button type="button" class="close" (click)="hideAlert();" aria-label="Close">
+    <span aria-hidden="true">&times;</span>
+  </button>
+    </div>
+</div>

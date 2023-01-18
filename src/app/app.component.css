@@ -1,0 +1,67 @@
+    #body {
+        background-color: #e1e1e1;
+    }
+    /*****Header*******/
+    
+    #brand {
+        margin-left: 50px;
+    }
+    
+    #main-header .container-fluid {
+        justify-content: flex-end;
+    }
+    
+    #drone-connection {
+        float: right;
+        margin-right: 2px;
+    }
+    /*****map*******/
+    
+    agm-map {
+        height: 90vh;
+    }
+    /*****side nav*******/
+    
+    .title,
+    .connection-status {
+        width: 10rem;
+        height: 2rem;
+        text-align: center;
+        margin-bottom: 2px;
+        border-radius: 5px;
+    }
+    
+    .title {
+        height: 3rem;
+    }
+    /* Drone Info section */
+    
+    #Drone-info {
+        color: white;
+        margin: 2px 2px 0px 20px;
+        border: 1px solid rgb(224, 224, 224);
+        border-radius: 10px;
+        box-shadow: 0px 1px 1px rgb(72, 71, 71);
+        padding: 10px;
+    }
+    
+    #Drone-info .info-item {
+        text-align: center;
+        margin-right: 5px;
+        box-shadow: 0px 1px 1px rgb(72, 71, 71);
+    }
+    
+    .info-title {
+        font-size: 20px;
+    }
+    
+    .info-value {
+        font-size: 30px;
+        color: rgb(162, 61, 6);
+        font-weight: bold;
+    }
+    
+    .info-unit {
+        font-size: 18px;
+    }
+    /* End of Drone Info section */
