@@ -1,3 +1,4 @@
+import { environment } from './../../environments/environment';
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import * as io from 'socket.io-client'
@@ -14,7 +15,7 @@ export class WebSocketService {
   public async iniServerSocket(){
 
     try{
-      const data = await this.http.get("http://localhost:5000/api/socket").toPromise();
+      const data = await this.http.get(environment.SERVER_IP_ADDRESS+'api/socket').toPromise();
       console.log(data);
       return data;
     }catch(error){

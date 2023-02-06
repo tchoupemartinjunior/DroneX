@@ -1,4 +1,5 @@
 import { Injectable } from '@angular/core';
+import { alertMsg } from '../models/alertMsg';
 import { IPosition, Position } from '../models/position';
 
 
@@ -51,5 +52,37 @@ export class UtilityService {
 
   public calcFightTime(distance:any, speed:any):any{
     return (distance/speed)*60 // time in minutes
+  }
+
+  public setConnectionAlert(result:string):any{
+    let message;
+    let type;
+    let showAlert=true;
+    if(result=="success"||result=="ok"){
+      message= alertMsg.connectionSuccess;
+      type = alertMsg.connectionSuccessType;
+    }
+    else{
+      message= alertMsg.connectionFailure;
+      type = alertMsg.connectionFailureType;
+    }
+    console.log(message, type);
+    return [showAlert, message, type];
+
+  }
+
+  public setSendAlert(result:boolean):any{
+    let message;
+    let type;
+    let showAlert=true;
+    if(result==true){
+      message= alertMsg.SendSuccess;
+      type = alertMsg.connectionSuccessType;
+    }
+    else{
+      message= alertMsg.SendFailure;
+      type = alertMsg.SendFailureType;
+    }
+    return [showAlert, message, type];
   }
 }

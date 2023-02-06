@@ -5,13 +5,13 @@
             <a class="navbar-brand fs-2 ml-5" id="brand">DroneX</a>
             <div class="container-fluid">
                 <span class="text-white fs-2 mr-2" for="">
-                <fa-icon [icon]="faCamera"></fa-icon>
-            </span>
+          <fa-icon [icon]="faCamera"></fa-icon>
+        </span>
                 <div class="form-check form-switch fs-3 m-5">
                     <input class="form-check-input bg-success mr-3" type="checkbox" role="switch" id="flexSwitchCheckDefault">
                 </div>
                 <div class="m-2" id="drone-connection">
-                    <div class="btn btn-warning" (click)="connectSocket()">
+                    <div class="btn btn-warning fs-5" (click)="connectSocket()">
                         Se connecter au drone</div>
                     <!--    <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>    -->
                 </div>
@@ -29,94 +29,98 @@
         <div class="row">
             <app-spinner></app-spinner>
             <!-- side navigation bar located on yhe left ofthe page -->
-            <div id="sidenav" class="col-md-3 col-sm-2 bg-light bd-1 m-3 p-2">
+            <div id="sidenav" class="col-md-3 col-sm-2 bg-light bd-1 m-3 ml-5 p-2">
                 <nav class="navbar navbar-dark bg-light text-dark flex-column flex-sm-row">
 
-                    <!------------Itinerary form (component1)  ------------------>
-                    <div>
-                        <app-alert [message]="alertMsg" [type]="alertType" [showModal]="showAlert"></app-alert>
-                    </div>
-                    <div class="card bg-light text-dark m-2" style="width: 30rem;">
+                    <!----------------------------Itinerary form (component1)  ------------------>
+                    <!-- Alert Message -->
+                    <app-alert [message]="alertMsg" [type]="alertType" (onDismiss)="onDismissConnectionAlert()" [showAlert]="showAlert"></app-alert>
+
+
+                    <div class="card  text-dark m-2 w-100 p-3">
 
                         <div class="card-body">
                             <h3 class="title card-title">Itinéraire</h3>
+
+                            <!-- The form -->
                             <form class="form" [formGroup]="itineraryForm" (ngSubmit)="sendSinglePathItinerary()">
+
+                                <!--The start position is obtained automatically from the server,it corresponds to the current drone position-->
                                 <div class="mb-3">
-                                    <!--The start position is obtained automatically from the server,it corresponds to the current drone position-->
                                     <label for="startPosition" class="form-label fs-5">Départ</label>
                                     <input type="text" class="form-control text-secondary" id="startPosition" placeholder="Point de départ" formControlName="start" readonly>
                                 </div>
+
+                                <!--The destinations-->
                                 <div class="mb-3">
-                                    <label class="form-label fs-5">Destination &nbsp;<span class="badge bg-primary">{{nbDestination}}</span></label>
+                                    <label class="form-label fs-5">Destination &nbsp;<span
+                      class="badge bg-primary">{{nbDestination}}</span></label>
                                     <input type="text" class="form-control" placeholder="Latitude, Longitude" formControlName="destination" [(ngModel)]="destinationInput" [value]="destinationInput">
-                                    <span *ngIf="destination && destination.invalid && destination.touched" class="text-danger">Formats de données invalids</span>
+                                    <span *ngIf="destination && destination.invalid && destination.touched" class="text-danger">Formats de
+                    données invalids</span>
                                 </div>
                                 <div class="mt-2">
-                                    <button class="btn  btn-outline-dark float-left"><fa-icon [icon]="faPlusCircle" style="font-size:20px"></fa-icon></button><label class="m-1 text-secondary">Ajouter une destination</label>
+                                    <button class="btn  btn-outline-dark float-left">
+                    <fa-icon [icon]="faPlusCircle" style="font-size:20px"></fa-icon>
+                  </button><label class="m-1 text-secondary">Ajouter une destination</label>
                                 </div>
-                                <div class="mt-3" *ngIf="nbDestination>0">
-                                    <p class="lead fs-5">Distance à parcourir : <span class="text-success fs-5">{{pathDistance}} km</span></p>
-                                    <p class="lead fs-5">Durée de vol : <span class="text-primary fs-5">{{flightTime}}</span></p>
+
+                                <!--Some Metrics-->
+                                <div class="mt-3 fs-5 text-secondary" *ngIf="nbDestination>0">
+                                    <p>Distance à parcourir : <span class="badge badge-success fs-5">{{pathDistance}} km</span>
+                                    </p>
+                                    <p>Temps de vol : <span class="badge badge-info fs-5">{{flightTime}}</span></p>
                                 </div>
+
+                                <!--Action Buttons-->
                                 <div class="mt-2 float-end">
                                     <button [disabled]="itineraryForm.invalid" class="btn btn-secondary btn-lg mr-1" (click)="clearItinerary()">Effacer</button>
                                     <button [disabled]="itineraryForm.invalid" class="btn btn-warning btn-lg" type="submit">Envoyer</button>
                                 </div>
-
                             </form>
+                            <app-alert [message]="alertMsg" [type]="alertType" (onDismiss)="onDismissSendAlert()" [showAlert]="showSendAlert"></app-alert>
 
                         </div>
+
                     </div>
-                    <!------------ End Itinerary form ------------------>
+                    <!------------ End Itinerary form Section------------------>
 
                     <!------------Drone Info display (component2)  ------------------>
-                    <div id="Drone-info" class="text-dark">
-                        <h3 class="title text-start mb-3 p-1">Drone infos</h3>
-                        <div class="col mb-2">
-                            <div class="row m-2">
-                                <div class="col-6 mb-2">
-                                    <div class="info-item">
-                                        <h4 class="info-title">Altitude</h4>
-                                        <p><span class="info-value">{{temperature}} <span class="info-unit">m</span></span>
-                                        </p>
-                                    </div>
-                                </div>
-                                <div class="col-6">
-                                    <div class="info-item">
-                                        <h4 class="info-title">Vitesse</h4>
-                                        <p><span class="info-value">{{humidity}} <span class="info-unit">Kph</span></span>
-                                        </p>
-                                    </div>
-                                </div>
+                    <div id="Drone-info" class=" card text-dark w-100 p-3">
+                        <h3 class="title text-start w-100 mb-3 p-1">Infos. du Drone</h3>
 
-                                <div class="col-6">
-                                    <div class="info-item">
-                                        <h4 class="info-title">Gps</h4>
-                                        <p class="info-value">{{gps}}, {{humidity}}</p>
-                                    </div>
-                                </div>
-                                <div class="col-6">
-                                    <div class="info-item">
-                                        <h4 class="info-title">Other</h4>
-                                        <p><span class="info-value">{{gps}} <span class="info-unit">°</span></span>
-                                        </p>
-                                    </div>
-                                </div>
+                        <div class="row row-sm-5 m-2">
+                            <div class="col-4 col-md-6 mb-2">
+                                <app-drone-info [infoTitle]="'Altitude'" [infoValue]="0" [infoUnit]="'m'"></app-drone-info>
+                            </div>
+                            <div class="col-4 col-md-6">
+                                <app-drone-info [infoTitle]="'Vitesse'" [infoValue]="0" [infoUnit]="'kph'"></app-drone-info>
+                            </div>
+
+                            <div class="col-4 col-md-6">
+                                <app-drone-info [infoTitle]="'Niveau Batterie'" [infoValue]="100" [infoUnit]="'%'"></app-drone-info>
+                            </div>
+                            <div class="col-4 col-md-6">
+                                <app-drone-info [infoTitle]="'Gps'" [infoValue]="'48.018, 0.157'" [infoUnit]="''"></app-drone-info>
+
                             </div>
                         </div>
+
                     </div>
+
                     <!------------End Drone Info display ------------------>
                 </nav>
                 <!------------End sidenav bar ------------------>
             </div>
             <!------------Google map (component3) ------------------>
             <div id="map" class="col-8 mt-3 ml-1">
-                <div style="position: absolute; top:80%; z-index:88888">
+                <div style="position: absolute; top:75%; z-index:10">
                     <app-video></app-video>
                 </div>
+                <div class="action-buttons"></div>
                 <agm-map [latitude]="lat" [longitude]="lng" [zoom]="zoom" (mapClick)="onChosenLocation($event)">
                     <!-- Marker indicating the current drone position-->
-                    <agm-marker [latitude]="lat" [longitude]="lng" [opacity]="startMarkerOpacity"></agm-marker>
+                    <agm-marker [latitude]="lat" [longitude]="lng" iconUrl="/assets/drone-svgrepo-com.svg"></agm-marker>
 
                     <!-- Destination marker(s)-->
                     <agm-marker *ngFor="let marker of markers; index as i" [latitude]="marker.lat" [longitude]="marker.lng" [animation]="'DROP'">
@@ -124,8 +128,7 @@
 
                     <!-- draw path between markers-->
                     <agm-polyline [visible]="true" [strokeWeight]="polyline.strokeWeight" [strokeColor]="'polyline.strokeColor'">
-                        <agm-polyline-point *ngFor="let coordinate of pathCoordinates; index as i" [latitude]="coordinate[0]" [longitude]="coordinate[1]">
-
+                        <agm-polyline-point *ngFor="let coordinate of droneItinerary; index as i" [latitude]="coordinate[0]" [longitude]="coordinate[1]">
                         </agm-polyline-point>
                     </agm-polyline>
                 </agm-map>

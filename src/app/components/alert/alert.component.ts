@@ -1,4 +1,4 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { LoaderService } from 'src/app/services/loader.service';
 
 @Component({
@@ -6,22 +6,15 @@ import { LoaderService } from 'src/app/services/loader.service';
   templateUrl: './alert.component.html',
   styleUrls: ['./alert.component.css']
 })
-export class AlertComponent implements OnInit {
+export class AlertComponent {
 
   @Input() message: string;
   @Input() type: string;
-  @Input() showModal: boolean;
+  @Input() showAlert: boolean;
+  @Output() onDismiss = new EventEmitter<void>();
 
-
-  constructor(public loader: LoaderService) { }
-
-  hideAlert(){
-    this.showModal=false;
+  onCloseAlert(): void {
+    this.onDismiss.emit();
   }
-
-
-  ngOnInit(): void {
-
-  }
-
 }
+

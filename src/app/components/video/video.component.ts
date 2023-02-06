@@ -16,11 +16,11 @@ export class VideoComponent implements OnInit {
   constructor(private http: HttpClient) { }
 
   ngOnInit(): void {
-    this.socket = io.connect('http://localhost:5000');
+    /*this.socket = io.connect('http://localhost:5000');
     this.socket.on('video_frame', (data) => {
       console.log(data);
       this.videoUrl = data;
-    });
+    });*/
   }
 
 }

@@ -11,6 +11,8 @@ import { LoadingInterceptor } from './loading.interceptor';
 import { AlertComponent } from './components/alert/alert.component';
 import { VideoComponent } from './components/video/video.component';
 import { environment } from 'src/environments/environment';
+import { DroneInfoComponent } from './components/drone-info/drone-info.component';
+import { alertMsg } from './models/alertMsg';
 
 
 
@@ -20,7 +22,8 @@ import { environment } from 'src/environments/environment';
     AppComponent,
     SpinnerComponent,
     AlertComponent,
-    VideoComponent
+    VideoComponent,
+    DroneInfoComponent,
   ],
   imports: [
     BrowserModule,

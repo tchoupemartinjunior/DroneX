@@ -31,18 +31,39 @@ To get more help on the Angular CLI use `ng help` or go check out the [Angular C
 ## install boostrap
 add the boostrap cdn links in the index.html file. links are found on the boostrap official page
 ## install FontAwesome
-npm install @fortawesome/fontawesome-svg-core
-npm install @fortawesome/free-brands-svg-icons
-npm install @fortawesome/free-regular-svg-icons
-npm install @fortawesome/free-solid-svg-icons
+
+best method
+- ng add @fortawesome/angular-fontawesome@0.11.0 (check your angular version)
+
+another method
+- npm install @fortawesome/fontawesome-svg-core
+- npm install @fortawesome/free-brands-svg-icons
+- npm install @fortawesome/free-regular-svg-icons
+- npm install @fortawesome/free-solid-svg-icons
+- npm install @fortawesome/angular-fontawesome 
+
+### add this line in the app.module.ts
+- import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
+-   import { faPlusCircle, faCamera } from '@fortawesome/free-solid-svg-icons';
+in the component.ts
+
 
 update the app.module.ts
 import desired component in the app.component.ts
 
 ## install angular google map agm
-https://angular-maps.com/guides/getting-started/
-npm install @agm/core
-npm i @types/googlemaps@3.39.13
+- https://angular-maps.com/guides/getting-started/
+- npm install @agm/core
+- npm i @types/googlemaps@3.39.13
+
+## for the backend
+- pip install -r requirement.txt
+- sudo apt-get install nginx (on linux)
+
+Configure Nginx to proxy pass with CORS headers: You can configure Nginx to add the appropriate CORS headers to the response, by adding the following code to your Nginx configuration file:
+- add_header 'Access-Control-Allow-Origin' '*';
+- add_header 'Access-Control-Allow-Methods' 'GET, POST, OPTIONS';
+
 # DroneX
 # DroneX
 # DroneX
