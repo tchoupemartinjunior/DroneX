@@ -15,7 +15,7 @@ export class WebSocketService {
   public async iniServerSocket(){
 
     try{
-      const data = await this.http.get(environment.SERVER_IP_ADDRESS+'api/socket').toPromise();
+      const data = await this.http.get(environment.SERVER_IP_ADDRESS+'api/connection').toPromise();
       console.log(data);
       return data;
     }catch(error){

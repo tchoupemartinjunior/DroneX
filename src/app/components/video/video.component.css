@@ -1,3 +1,7 @@
-video {
-    height: 20vh;
+.live-stream {
+    border-radius: 10px;
+    background-color: black;
+    height: 28vh;
+    width: 60vh;
+    color: white;
 }

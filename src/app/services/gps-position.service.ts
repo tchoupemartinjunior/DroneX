@@ -16,18 +16,15 @@ export class GpsPositionService {
   res:any;
 
   public getStartPosition():void{
-    this.res = this.http.get(this.API_ROOT_URL+'/startPosition').subscribe(data => {
+    this.res = this.http.get(this.API_ROOT_URL+'api/startPosition').subscribe(data => {
   console.log(data);
   });
 }
 
-  public async sendSinglePathItinerary(itinerary:any){
-    const data: Itinerary={
-      start: {lat:1212,lng:4444},
-      destination: {lat:1212,lng:4444}
-    }
+  public async sendMissionInfo(itinerary:any){
+
     try{
-      const result = await this.http.post(this.API_ROOT_URL+'/api/gps', {itinerary}).toPromise();
+      const result = await this.http.post(this.API_ROOT_URL+'api/mission', {itinerary}).toPromise();
       return result;
     }catch(error){
     console.log(error);

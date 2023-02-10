@@ -1,24 +1,29 @@
 <!------------Header nav------------------>
 <div id="body">
     <div class="container-fluid">
-        <nav class="navbar navbar-expand-lg navbar-dark bg-dark" id="main-header" style="height:70px;">
-            <a class="navbar-brand fs-2 ml-5" id="brand">DroneX</a>
-            <div class="container-fluid">
-                <span class="text-white fs-2 mr-2" for="">
-          <fa-icon [icon]="faCamera"></fa-icon>
-        </span>
-                <div class="form-check form-switch fs-3 m-5">
-                    <input class="form-check-input bg-success mr-3" type="checkbox" role="switch" id="flexSwitchCheckDefault">
-                </div>
-                <div class="m-2" id="drone-connection">
-                    <div class="btn btn-warning fs-5" (click)="connectSocket()">
-                        Se connecter au drone</div>
-                    <!--    <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>    -->
-                </div>
-                <form class="form">
-                    <input class="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search">
-                </form>
+        <nav class="navbar navbar-dark bg-dark align-items-center" id="main-header">
+            <div id="brand">
+                <button class="navbar-toggler ml-3" type="button" data-bs-toggle="collapse" data-bs-target="#navbarToggleExternalContent" aria-controls="navbarToggleExternalContent" aria-expanded="false" aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+                <a class="navbar-brand fs-2 ml-3">DroneX</a>
             </div>
+
+            <div class="connection-status text-white text-lowercase fs-6 bg-success p-2">
+                CONNEXION éTABLIE
+            </div>
+
+
+            <div id="quickActions">
+                <fa-icon [icon]="['fas', 'video']" [size]="'2x'" class="info-icons" (click)="cameraOnOff()"></fa-icon>
+                <fa-icon [icon]="['fas', 'signal']" [size]="'2x'" class="info-icons"></fa-icon>
+                <fa-icon [icon]="['fas', 'battery-full']" [size]="'2x'" class="info-icons"></fa-icon>
+
+                <div class="btn btn-success ml-4" (click)="connectSocket()">
+                    <fa-icon [icon]="onOffIcon" [size]="'2x'"></fa-icon>
+                </div>
+            </div>
+
         </nav>
     </div>
     <!------------Header nav------------------>
@@ -26,34 +31,39 @@
 
 
     <div class="container-fluid">
-        <div class="row">
+        <div class="row d-flex justify-content-center">
             <app-spinner></app-spinner>
             <!-- side navigation bar located on yhe left ofthe page -->
-            <div id="sidenav" class="col-md-3 col-sm-2 bg-light bd-1 m-3 ml-5 p-2">
-                <nav class="navbar navbar-dark bg-light text-dark flex-column flex-sm-row">
+            <div id="sidenav" class="col-md-3 bg-light bd-1 m-3  p-1 ">
+                <!-- Alert Message -->
+                <app-alert [message]="alertMsg" [type]="alertType" (onDismiss)="onDismissConnectionAlert()" [showAlert]="showAlert"></app-alert>
+
+                <nav class="navbar navbar-dark bg-light text-dark flex-column flex-md-row">
 
                     <!----------------------------Itinerary form (component1)  ------------------>
-                    <!-- Alert Message -->
-                    <app-alert [message]="alertMsg" [type]="alertType" (onDismiss)="onDismissConnectionAlert()" [showAlert]="showAlert"></app-alert>
-
-
-                    <div class="card  text-dark m-2 w-100 p-3">
+                    <nav class="navbar navbar-light bg-light d-flex justify-content-left">
+                        <form class="form-inline">
+                            <button class="btn btn btn-outline-dark" type="button" (click)="displayMission()">Mission</button>
+                            <button class="btn btn btn-outline-dark" type="button" (click)="displayDroneInfo()">Drone</button>
+                            <button class="btn btn btn-outline-dark" type="button" (click)="displayManual()">Quick</button>
+                        </form>
+                    </nav>
+                    <div class="card  text-dark m-2 w-100" *ngIf="showMission">
 
                         <div class="card-body">
-                            <h3 class="title card-title">Itinéraire</h3>
 
                             <!-- The form -->
-                            <form class="form" [formGroup]="itineraryForm" (ngSubmit)="sendSinglePathItinerary()">
+                            <form class="form" [formGroup]="itineraryForm">
 
                                 <!--The start position is obtained automatically from the server,it corresponds to the current drone position-->
                                 <div class="mb-3">
-                                    <label for="startPosition" class="form-label fs-5">Départ</label>
+                                    <label for="startPosition" class="form-label fs-6">Départ</label>
                                     <input type="text" class="form-control text-secondary" id="startPosition" placeholder="Point de départ" formControlName="start" readonly>
                                 </div>
 
                                 <!--The destinations-->
                                 <div class="mb-3">
-                                    <label class="form-label fs-5">Destination &nbsp;<span
+                                    <label class="form-label fs-6">Destination(s) &nbsp;<span
                       class="badge bg-primary">{{nbDestination}}</span></label>
                                     <input type="text" class="form-control" placeholder="Latitude, Longitude" formControlName="destination" [(ngModel)]="destinationInput" [value]="destinationInput">
                                     <span *ngIf="destination && destination.invalid && destination.touched" class="text-danger">Formats de
@@ -66,27 +76,43 @@
                                 </div>
 
                                 <!--Some Metrics-->
-                                <div class="mt-3 fs-5 text-secondary" *ngIf="nbDestination>0">
-                                    <p>Distance à parcourir : <span class="badge badge-success fs-5">{{pathDistance}} km</span>
+                                <div class="mt-3 fs-6 text-secondary" *ngIf="nbDestination>0">
+
+                                    <p>Distance à parcourir : <span class="badge badge-success fs-6 p-1">{{pathDistance}} km</span>
                                     </p>
-                                    <p>Temps de vol : <span class="badge badge-info fs-5">{{flightTime}}</span></p>
+                                    <p>Temps de vol : <span class="badge badge-info fs-6 p-1">{{flightTime}}</span></p>
                                 </div>
 
                                 <!--Action Buttons-->
                                 <div class="mt-2 float-end">
-                                    <button [disabled]="itineraryForm.invalid" class="btn btn-secondary btn-lg mr-1" (click)="clearItinerary()">Effacer</button>
-                                    <button [disabled]="itineraryForm.invalid" class="btn btn-warning btn-lg" type="submit">Envoyer</button>
+                                    <button [disabled]="itineraryForm.invalid" class="btn btn-secondary btn mr-1" (click)="clearItinerary()">Effacer</button>
+                                    <button [disabled]="itineraryForm.invalid" class="btn btn-warning btn" (click)="sendMissionInfo()">Envoyer</button>
                                 </div>
                             </form>
+
                             <app-alert [message]="alertMsg" [type]="alertType" (onDismiss)="onDismissSendAlert()" [showAlert]="showSendAlert"></app-alert>
 
+                        </div>
+                    </div>
+
+                    <div class="row mission-list m-2 p-3">
+                        <div class="col-4" *ngFor="let mission of missions; let i = index">
+                            Mission <span class="fw-bolder">{{mission.title}}</span>
+                        </div>
+                        <div class="col">
+                            <form class="form-inline">
+                                <div class="btn btn-primary">Démarrer</div>
+                                <div class="btn btn-danger" (click)="deleteMission(mission)">
+                                    <fa-icon [icon]="['fas', 'trash']"></fa-icon>
+                                </div>
+                            </form>
                         </div>
 
                     </div>
                     <!------------ End Itinerary form Section------------------>
 
                     <!------------Drone Info display (component2)  ------------------>
-                    <div id="Drone-info" class=" card text-dark w-100 p-3">
+                    <div id="Drone-info" class=" card text-dark w-100 p-3" *ngIf="showDroneInfo">
                         <h3 class="title text-start w-100 mb-3 p-1">Infos. du Drone</h3>
 
                         <div class="row row-sm-5 m-2">
@@ -113,9 +139,9 @@
                 <!------------End sidenav bar ------------------>
             </div>
             <!------------Google map (component3) ------------------>
-            <div id="map" class="col-8 mt-3 ml-1">
-                <div style="position: absolute; top:75%; z-index:10">
-                    <app-video></app-video>
+            <div id="map" class="col-md-8 mt-3">
+                <div style="position: absolute; top:70%; z-index:10; height:50;">
+                    <app-video [videoUrl]="videoUrl"></app-video>
                 </div>
                 <div class="action-buttons"></div>
                 <agm-map [latitude]="lat" [longitude]="lng" [zoom]="zoom" (mapClick)="onChosenLocation($event)">

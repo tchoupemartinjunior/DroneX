@@ -1,43 +1,74 @@
     #body {
         background-color: #a3b7ea;
+        height: fit-content;
     }
     /*****Header*******/
-    
+
     #brand {
-        margin-left: 50px;
+        margin-left: 3rem;
     }
-    
-    #main-header .container-fluid {
+
+    #main-header {
+        height: 4.5rem;
+    }
+
+    .info-icons {
+        color: white;
+        margin: 0 1rem;
+        height: 100%;
+        padding: 0 1rem;
+    }
+
+    .info-icons:after {
+        content: "";
+        background-color: #5c5b5b;
+        position: absolute;
+        width: 1px;
+        margin: 0 2rem;
+        height: 70%;
+    }
+
+    .info-icons:hover {
+        cursor: pointer;
+        color: rgb(237, 157, 45)
+    }
+
+    #quickActions {
+        float: right;
+        margin-top: 0.5rem;
+        margin-right: 5rem;
         justify-content: flex-end;
     }
-    
-    #drone-connection {
-        float: right;
-        margin-right: 2px;
-    }
+
+    #drone-connection {}
     /*****map*******/
-    
+
     agm-map {
-        height: 100vh;
+        height: 90vh;
     }
     /*****side nav*******/
-    
+
     .title,
     .connection-status {
-        width: 10rem;
-        height: 2rem;
+        width: auto;
         text-align: center;
-        margin-bottom: 2px;
         border-radius: 5px;
     }
-    
+
     .title {
         height: 3rem;
     }
-    
+
+    .mission-list {
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        padding: 0.5em 0.5em;
+        background-color: #d1e5ef;
+    }
+
     #sidenav {}
     /* Drone Info section */
-    
+
     #Drone-info {
         color: white;
         margin: 2px 2px 0px 20px;
@@ -46,23 +77,23 @@
         box-shadow: 0px 1px 1px rgb(72, 71, 71);
         padding: 10px;
     }
-    
+
     #Drone-info .info-item {
         text-align: center;
         margin-right: 5px;
         box-shadow: 0px 1px 1px rgb(72, 71, 71);
     }
-    
+
     .info-title {
-        font-size: 20px;
+        font-size: 0.2rem;
     }
-    
+
     .info-value {
-        font-size: 30px;
+        font-size: 0.5rem;
         color: rgb(162, 61, 6);
         font-weight: bold;
     }
-    
+
     .info-unit {
         font-size: 18px;
     }

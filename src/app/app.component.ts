@@ -9,6 +9,7 @@
   import * as io from 'socket.io-client';
   import { WebSocketService } from './services/web-socket.service'
 import { environment } from 'src/environments/environment';
+import { IconProp } from '@fortawesome/fontawesome-svg-core';
   @Component({
     selector: 'app-root',
     templateUrl: './app.component.html',
@@ -20,6 +21,7 @@ import { environment } from 'src/environments/environment';
     // icons
     faPlusCircle = faPlusCircle;
     faCamera = faCamera;
+    onOffIcon:IconProp = ['fas', 'power-off'];
 
     constructor(
       private gpsPositionService: GpsPositionService,
@@ -35,12 +37,13 @@ import { environment } from 'src/environments/environment';
     res: any;
     alertMsg: string;
     alertType: string;
+    isDroneConnected: any;
 
     nbDestination: number;
     showAlert: boolean;
     showSendAlert:boolean;
-    pathDistance: number | undefined;
-    flightTime: string | undefined;
+    pathDistance: number;
+    flightTime: string;
 
     /********************** map settings ***************/
     lat = 48.01892231026212;
@@ -66,6 +69,15 @@ import { environment } from 'src/environments/environment';
     droneStartInput: String = this.utils.positionToString(this.droneStartPosition);
     destinationInput: string = "";
 
+    mission:IMission = {
+      start: [this.lat, this.lng], destinations: [],
+      distance: 0,
+      flight_time: 0,
+      title: ''
+    }
+    missions:any=[]
+
+
     //drone itinerary form
     itineraryForm = new FormGroup({
       start: new FormControl(this.droneStartInput, [Validators.required]),
@@ -83,14 +95,46 @@ import { environment } from 'src/environments/environment';
       [this.lat, this.lng]
     ];
 
+
+     /***Sidebar Navigation Menu display variables */
+  showMission:any = true;
+  showDroneInfo:any = false;
+  showManual:any= false;
+
+  videoUrl ="";
+
     async connectSocket() {
       this.connectDrone();
-      this.setReceiveDroneData();
+      //this.setReceiveDroneData();
     }
 
-    /******************** Methods ******************/
-    onChosenLocation($event: any): void {
 
+
+
+    /*************************************** Methods *************************************************/
+
+    cameraOnOff() {
+      if (this.videoUrl=="") {
+        this.videoUrl="http://localhost:5000/video_feed";
+      }
+      else{
+        this.videoUrl="";
+      }
+    }
+    displayMission():void {
+      this.showMission=true;
+      this.showDroneInfo=this.showManual=false;
+    }
+    displayDroneInfo():void {
+      this.showDroneInfo=true;
+      this.showManual=this.showMission=false;
+    }
+    displayManual():void {
+      this.showManual=true;
+      this.showDroneInfo=this.showMission=false;
+    }
+
+    onChosenLocation($event: any): void {
       let droneMeanSpeed = 40; //km/h
       //this.markers.shift(); // keep atmost 2 markers on the map
       let chosen_lat = $event.coords.lat;
@@ -98,9 +142,14 @@ import { environment } from 'src/environments/environment';
 
 
       this.droneItinerary.push([chosen_lat, chosen_lng]);
+      this.mission.destinations.push([chosen_lat, chosen_lng]);
+        /**Add a mission to the list of missions */
+
+
+      /**distance calculation */
       this.pathDistance = this.utils.getDistance(this.droneItinerary).toFixed(2);
 
-
+      /**flight time calculation */
       if (this.utils.calcFightTime(this.pathDistance, droneMeanSpeed).toFixed(2) < 100) {
         this.flightTime = this.utils.calcFightTime(this.pathDistance, droneMeanSpeed).toFixed(2) + " min";
       }
@@ -115,20 +164,40 @@ import { environment } from 'src/environments/environment';
 
       //update destination input
       this.destinationInput = `${chosen_lat.toFixed(6)}, ${chosen_lng.toFixed(6)}`
+      this.mission.destinations= this.droneItinerary;
+      this.mission.flight_time = +this.flightTime.split(" ")[0];
+      this.mission.distance= this.pathDistance;
+      this.mission.title= `${this.mission.distance}km| ${this.mission.flight_time}min`
     }
 
 
-    async sendSinglePathItinerary() {
-      this.gpsPositionService.getStartPosition();
-      this.itineraryForm.patchValue({
-        destination: this.destinationInput
-      })
-      //console.warn(this.itineraryForm.value);
-      this.res = await this.gpsPositionService.sendSinglePathItinerary(this.itineraryForm.value);
-      console.warn(this.res);
-      [this.showSendAlert, this.alertMsg, this.alertType] = this.utils.setSendAlert(this.res.ok);
-      console.log("**",this.alertMsg);
+    async sendMissionInfo() {
+      if(this.isDroneConnected=="success"){
+        this.missions.push(this.mission);
+        this.gpsPositionService.getStartPosition();
+        this.itineraryForm.patchValue({
+          destination: this.destinationInput
+        })
+        console.warn(this.mission)
+        //console.warn(this.itineraryForm.value);
+        //this.res = await this.gpsPositionService.sendMissionInfo(this.itineraryForm.value);
+        this.res = await this.gpsPositionService.sendMissionInfo(this.missions);
+        console.warn(this.res);
+        [this.showSendAlert, this.alertMsg, this.alertType] = this.utils.setSendAlert(this.res.ok);
+        //console.log("**",this.alertMsg);
+        console.warn(this.missions)
+        //this.missions.splice(0);
+      }
 
+      else{
+        this.connectDrone();
+      }
+
+    }
+    deleteMission(mission: any){
+      this.missions.forEach((element: any,index: any)=>{
+        if(element==mission) this.missions.splice(index,1);
+     });
     }
 
     clearItinerary() {
@@ -154,11 +223,12 @@ import { environment } from 'src/environments/environment';
     }
 
     async connectDrone() {
-      this.socketio = io.io(environment.WEB_SOCKET);
+      //this.socketio = io.io(environment.WEB_SOCKET);
       this.res = await this.socket.iniServerSocket();
+      this.isDroneConnected = this.res.result;
 
       [this.showAlert, this.alertMsg, this.alertType] = this.utils.setConnectionAlert(this.res.result);
-      console.log("***********", this.alertMsg);
+      //console.log("***********", this.alertMsg);
 
     }
 
@@ -182,6 +252,13 @@ import { environment } from 'src/environments/environment';
       this.showSendAlert = false;
     }
 
+  }
 
+  interface IMission{
+    start:number[];
+    destinations:any[];
+    distance:number;
+    flight_time:number;
+    title:string;
   }
 

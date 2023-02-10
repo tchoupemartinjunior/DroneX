@@ -5,15 +5,15 @@
 }
 
 .info-title {
-    font-size: 1.5rem;
+    font-size: 1rem;
 }
 
 .info-value {
-    font-size: 1.9rem;
+    font-size: 1.2rem;
     color: rgb(162, 61, 6);
     font-weight: bold;
 }
 
 .info-unit {
-    font-size: 1.2rem;
+    font-size: 0.8rem;
 }
