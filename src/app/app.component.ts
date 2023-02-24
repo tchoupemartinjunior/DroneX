@@ -1,5 +1,5 @@
   import { IDroneInfo } from './models/drone-info';
-  import { GpsPositionService } from './services/gps-position.service';
+  import { MissionService } from './services/mission.service';
   import { Component } from '@angular/core';
   import { faPlusCircle, faCamera } from '@fortawesome/free-solid-svg-icons';
   import { FormGroup, FormControl, Validators } from '@angular/forms';
@@ -18,13 +18,12 @@ import { IconProp } from '@fortawesome/fontawesome-svg-core';
 
   export class AppComponent {
     title = 'droneapp';
-    // icons
-    faPlusCircle = faPlusCircle;
-    faCamera = faCamera;
+
     onOffIcon:IconProp = ['fas', 'power-off'];
+    cameraIcon:IconProp = ['fas', 'video-slash'];
 
     constructor(
-      private gpsPositionService: GpsPositionService,
+      private missn:MissionService,
       private utils: UtilityService,
       private socket: WebSocketService
     ) { }
@@ -37,7 +36,7 @@ import { IconProp } from '@fortawesome/fontawesome-svg-core';
     res: any;
     alertMsg: string;
     alertType: string;
-    isDroneConnected: any;
+    isDroneConnected: any="success";
 
     nbDestination: number;
     showAlert: boolean;
@@ -48,7 +47,6 @@ import { IconProp } from '@fortawesome/fontawesome-svg-core';
     /********************** map settings ***************/
     lat = 48.01892231026212;
     lng = 0.15759050846099854;
-    startMarkerOpacity = 0.8;
     zoom = 15;
     // polyline settings
     polyline = {
@@ -69,12 +67,6 @@ import { IconProp } from '@fortawesome/fontawesome-svg-core';
     droneStartInput: String = this.utils.positionToString(this.droneStartPosition);
     destinationInput: string = "";
 
-    mission:IMission = {
-      start: [this.lat, this.lng], destinations: [],
-      distance: 0,
-      flight_time: 0,
-      title: ''
-    }
     missions:any=[]
 
 
@@ -100,6 +92,8 @@ import { IconProp } from '@fortawesome/fontawesome-svg-core';
   showMission:any = true;
   showDroneInfo:any = false;
   showManual:any= false;
+  innerMenuStyle:any={mission:"btn btn btn-dark", droneInfo:"btn btn btn-outline-dark", manual:"btn btn btn-outline-dark"}
+
 
   videoUrl ="";
 
@@ -116,46 +110,50 @@ import { IconProp } from '@fortawesome/fontawesome-svg-core';
     cameraOnOff() {
       if (this.videoUrl=="") {
         this.videoUrl="http://localhost:5000/video_feed";
+        this.cameraIcon=['fas', 'video'];
       }
       else{
         this.videoUrl="";
+        this.cameraIcon=['fas', 'video-slash'];
       }
     }
     displayMission():void {
       this.showMission=true;
       this.showDroneInfo=this.showManual=false;
+      this.innerMenuStyle={mission:"btn btn btn-dark", droneInfo:"btn btn btn-outline-dark", manual:"btn btn btn-outline-dark"}
     }
     displayDroneInfo():void {
       this.showDroneInfo=true;
       this.showManual=this.showMission=false;
+      this.innerMenuStyle={mission:"btn btn btn-outline-dark", droneInfo:"btn btn btn-dark", manual:"btn btn btn-outline-dark"}
+
     }
     displayManual():void {
       this.showManual=true;
       this.showDroneInfo=this.showMission=false;
+      this.innerMenuStyle={mission:"btn btn btn-outline-dark", droneInfo:"btn btn btn-outline-dark", manual:"btn btn btn-dark"}
+
     }
 
-    onChosenLocation($event: any): void {
+    onChosenLocation($event: any): any {
       let droneMeanSpeed = 40; //km/h
       //this.markers.shift(); // keep atmost 2 markers on the map
       let chosen_lat = $event.coords.lat;
       let chosen_lng = $event.coords.lng;
 
-
       this.droneItinerary.push([chosen_lat, chosen_lng]);
-      this.mission.destinations.push([chosen_lat, chosen_lng]);
-        /**Add a mission to the list of missions */
-
 
       /**distance calculation */
-      this.pathDistance = this.utils.getDistance(this.droneItinerary).toFixed(2);
+      this.pathDistance = this.utils.getDistance(this.droneItinerary).toFixed(1);
 
       /**flight time calculation */
       if (this.utils.calcFightTime(this.pathDistance, droneMeanSpeed).toFixed(2) < 100) {
-        this.flightTime = this.utils.calcFightTime(this.pathDistance, droneMeanSpeed).toFixed(2) + " min";
+        this.flightTime = this.utils.calcFightTime(this.pathDistance, droneMeanSpeed).toFixed(1) + " min";
       }
       else {
-        this.flightTime = (this.utils.calcFightTime(this.pathDistance, droneMeanSpeed) / 60).toFixed(2) + " h";
+        this.flightTime = (this.utils.calcFightTime(this.pathDistance, droneMeanSpeed) / 60).toFixed(1) + " h";
       }
+      /** calculate the number of destinatios*/
       this.nbDestination = this.droneItinerary.length - 1;
       //console.log(this.droneItinerary);
 
@@ -164,24 +162,23 @@ import { IconProp } from '@fortawesome/fontawesome-svg-core';
 
       //update destination input
       this.destinationInput = `${chosen_lat.toFixed(6)}, ${chosen_lng.toFixed(6)}`
-      this.mission.destinations= this.droneItinerary;
-      this.mission.flight_time = +this.flightTime.split(" ")[0];
-      this.mission.distance= this.pathDistance;
-      this.mission.title= `${this.mission.distance}km| ${this.mission.flight_time}min`
+
     }
 
 
     async sendMissionInfo() {
+      let flight_time = +this.flightTime.split(" ")[0];
+      let mission:Mission = new Mission([this.lat, this.lng],this.droneItinerary,this.pathDistance,flight_time,`${this.pathDistance}km| ${flight_time}min`);
+
       if(this.isDroneConnected=="success"){
-        this.missions.push(this.mission);
-        this.gpsPositionService.getStartPosition();
+        this.missions.push(mission);
+        this.missn.getStartPosition();
         this.itineraryForm.patchValue({
           destination: this.destinationInput
         })
-        console.warn(this.mission)
         //console.warn(this.itineraryForm.value);
-        //this.res = await this.gpsPositionService.sendMissionInfo(this.itineraryForm.value);
-        this.res = await this.gpsPositionService.sendMissionInfo(this.missions);
+        //this.res = await this.missn } from './services/mission.sendMissionInfo(this.itineraryForm.value);
+        this.res = await this.missn.sendMissionInfo(mission);
         console.warn(this.res);
         [this.showSendAlert, this.alertMsg, this.alertType] = this.utils.setSendAlert(this.res.ok);
         //console.log("**",this.alertMsg);
@@ -199,6 +196,26 @@ import { IconProp } from '@fortawesome/fontawesome-svg-core';
         if(element==mission) this.missions.splice(index,1);
      });
     }
+    async launchMission(mission: any){
+      this.missions.forEach(async (element: any,index: any)=>{
+        if(element==mission){
+          this.res = await this.missn.launchMission(mission);
+          console.warn(this.res);
+          this.alertMsg="Démarrage en cours";
+        }
+     });
+
+    }
+    async droneTakeOff(){
+      if(this.isDroneConnected=="success"){
+      this.res = await this.missn.takeOff();
+      console.warn(this.res);
+      this.alertMsg="Décollage en cours ...";
+    }
+    else{
+      this.connectDrone();
+    }
+  }
 
     clearItinerary() {
       this.droneItinerary.splice(1);
@@ -260,5 +277,21 @@ import { IconProp } from '@fortawesome/fontawesome-svg-core';
     distance:number;
     flight_time:number;
     title:string;
+  }
+  class Mission implements IMission{
+    start: number[];
+    destinations: any[];
+    distance: number;
+    flight_time: number;
+    title: string;
+
+    constructor(start:number[],destinations:any[], distance:number, flight_time:number, title:string){
+      this.start = start;
+      this.destinations =destinations;
+      this.distance = distance;
+      this.flight_time = flight_time;
+      this.title = title;
+    }
+
   }
 

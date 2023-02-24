@@ -1,5 +1,5 @@
-import { Itinerary } from './../models/itinerary';
-import { AppComponent } from './../app.component';
+import { Itinerary } from '../models/itinerary';
+import { AppComponent } from '../app.component';
 import { Injectable } from '@angular/core';
 import { IPosition, Position } from '../models/position';
 import { HttpClient} from '@angular/common/http';
@@ -9,7 +9,7 @@ import { environment } from 'src/environments/environment';
   providedIn: 'root'
 })
 
-export class GpsPositionService {
+export class MissionService {
   API_ROOT_URL =environment.SERVER_IP_ADDRESS
   constructor(private http: HttpClient) { }
 
@@ -25,6 +25,26 @@ export class GpsPositionService {
 
     try{
       const result = await this.http.post(this.API_ROOT_URL+'api/mission', {itinerary}).toPromise();
+      return result;
+    }catch(error){
+    console.log(error);
+    return error
+  }
+  }
+
+  public async launchMission(mission:any){
+    try{
+      const result = await this.http.post(this.API_ROOT_URL+'api/mission/launch', {mission}).toPromise();
+      return result;
+    }catch(error){
+    console.log(error);
+    return error
+  }
+  }
+
+  public async takeOff(){
+    try{
+      const result = await this.http.get(this.API_ROOT_URL+'api/drone?action=takeOff').toPromise();
       return result;
     }catch(error){
     console.log(error);

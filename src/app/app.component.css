@@ -33,10 +33,10 @@
         color: rgb(237, 157, 45)
     }
 
-    #quickActions {
+    .quickActions {
         float: right;
-        margin-top: 0.5rem;
-        margin-right: 5rem;
+        margin-top: 0.2rem;
+        margin-right: 0.2rem;
         justify-content: flex-end;
     }
 

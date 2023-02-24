@@ -13,7 +13,7 @@ import { VideoComponent } from './components/video/video.component';
 import { environment } from 'src/environments/environment';
 import { DroneInfoComponent } from './components/drone-info/drone-info.component';
 import { alertMsg } from './models/alertMsg';
-import { faSignal, faPowerOff, faBatteryFull, faTrash, faVideo, faVideoSlash } from '@fortawesome/free-solid-svg-icons';
+import { faSignal, faPowerOff, faBatteryFull, faTrash, faVideo, faVideoSlash, faArrowCircleUp,faArrowCircleDown } from '@fortawesome/free-solid-svg-icons';
 import { HeaderComponent } from './components/header/header.component';
 import { MissionComponent } from './components/mission/mission.component';
 
@@ -49,6 +49,6 @@ import { MissionComponent } from './components/mission/mission.component';
 })
 export class AppModule {
  constructor(library: FaIconLibrary) {
-    library.addIcons(faSignal, faPowerOff, faBatteryFull, faTrash,faVideo, faVideoSlash );
+    library.addIcons(faSignal, faPowerOff, faBatteryFull, faTrash,faVideo, faVideoSlash, faArrowCircleUp,faArrowCircleDown );
   }
  }
