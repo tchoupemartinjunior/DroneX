@@ -1,12 +1,12 @@
 from flask import Response
-import cv2
+#import cv2
 
 
 def gen_frames():
     camera = cv2.VideoCapture(0) # webcam
     while True:
         success, frame = camera.read()  # read the camera frame
-   
+
         resize = cv2.resize(frame, (500, 200))
         if not success:
             break

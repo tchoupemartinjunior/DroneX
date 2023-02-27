@@ -1,16 +1,17 @@
 from flask import Flask, jsonify, request, Response
 from flask_cors import CORS
 from flask_sqlalchemy import SQLAlchemy
-import cv2
+#import cv2
 import service.videoService as videoService
 import service.missionService as missionService
+#import RPi.GPIO as GPIO
 
 import random
 from threading import Thread
 import time
- 
+
 #STATUS CODE : https://flask-api.github.io/flask-api/api-guide/status-codes/
- 
+
 #First we create call the Flask framework and create a secret password.
 #Then create socketio variable where cors_allowed_origin = * to acept communication with other domains.
 app = Flask(__name__)
@@ -24,29 +25,61 @@ db = SQLAlchemy(app)
 
 class Mission(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    start= db.Column(db.String(50), nullable=False)
-    destination = db.Column(db.String(250), nullable=False)
+    start= db.Column(db.String(100), nullable=False)
+    destination = db.Column(db.String(1000), nullable=False)
 
     def __repr__(self):
         return f'<Mission {self.start}>'
-    
+
 class DroneData(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     batteryVoltage = db.Column(db.Float)
-    heading=db.Column(db.Float)
-    pitch=db.Column(db.Float)
-    roll=db.Column(db.Float)
-    
+    # heading=db.Column(db.Float)
+    # pitch=db.Column(db.Float)
+    # roll=db.Column(db.Float)
+
     def __repr__(self):
-        return f'<Mission {self.start}>'
-    
+        return f'<Mission {self.batteryVoltage}>'
+
 drone_lat = 48.01892231026212;
 drone_lng = 0.15759050846099854;
 
 """******************  Web API section  ****************"""
- 
+
 #This is the api that we can run by calling http://ip:5000/api/
 #this API is called from the Angular client
+
+""" Drone data section  """
+
+@app.route('/api/droneData/last', methods=['GET'])
+def get_most_recent_droneData():
+    droneData = DroneData.query.order_by(DroneData.id.desc()).first()
+    return jsonify({
+    'id': droneData.id,
+    })
+
+@app.route('/api/droneData', methods=['GET'])
+def get_all_droneData():
+    droneData = DroneData.query.all()
+    response = {'droneData': []}
+    for data in droneData:
+        response['droneData'].append({
+            'id': data.id,
+            'battery':data.batteryVoltage
+        })
+    return jsonify(response)
+
+@app.route('/api/droneData', methods=['POST'])
+def add_droneData():
+    batteryVoltage = request.json['battery']
+
+    new_data = DroneData(batteryVoltage=(batteryVoltage))
+    db.session.add(new_data)
+    db.session.commit()
+
+    return jsonify({'message': 'DroneData added successfully!'})
+
+""" End drone data section  """
 
 # connection between the front-end and the drone
 @app.route('/api/connection')
@@ -69,7 +102,7 @@ def addMission():
 def get_all_missions():
     return missionService.get_all_missions()
 
-# launch a mission   
+# launch a mission
 @app.route('/api/mission/launch', methods=['POST'])
 def launchMission():
     return missionService.launchMission()
@@ -89,7 +122,7 @@ def quickAction():
         response = {"action":"land", "response":"ok"}
         #perform actions
         return jsonify(response)
-    
+
     elif action=="rth":
         response = {"action":"return_to_home", "response":"ok"}
         #perform actions
@@ -97,35 +130,6 @@ def quickAction():
     else:
         response ={"error":"Action not found", "response":"error"}
         return jsonify(response)
-
-@app.route('/api/droneData/last', methods=['GET'])
-def get_most_recent_droneData():
-    droneData = DroneData.queryy.order_by(DroneData.id.desc()).first()
-    return jsonify({
-    'id': droneData.id,
-    })
-
-@app.route('/api/droneData', methods=['GET'])
-def get_all_droneData():
-    droneData = DroneData.query.all()
-    response = {'droneData': []}
-    for data in droneData:
-        response['droneData'].append({
-            'id': data.id,
-            'battery':data.batteryVoltage
-        })
-    return jsonify(response)
-
-@app.route('/api/droneData', methods=['POST'])
-def add_droneData():
-    batteryVoltage = request.json['battery']
-
-    new_data = Mission(batteryVoltage=batteryVoltage)
-    db.session.add(new_data)
-    db.session.commit()
-
-    return jsonify({'message': 'User added successfully!'})
-
 
 
 
@@ -148,5 +152,5 @@ if __name__ == "__main__":
     db.create_all()
     missionService.printDataBase(Mission)
     print("Starting The Drone_Server ...")
-    app.run(debug=True)
+    app.run(debug=True, port=5000, host='0.0.0.0')
     spellcheck="false"

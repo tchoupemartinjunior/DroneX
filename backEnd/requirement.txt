@@ -15,3 +15,4 @@ flask_cors
 gunicorn
 eventlet
 flask_api
+rpi.gpio

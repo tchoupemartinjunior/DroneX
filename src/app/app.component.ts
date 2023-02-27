@@ -36,7 +36,7 @@ import { IconProp } from '@fortawesome/fontawesome-svg-core';
     res: any;
     alertMsg: string;
     alertType: string;
-    isDroneConnected: any="success";
+    isDroneConnected: any="";
 
     nbDestination: number;
     showAlert: boolean;
@@ -201,7 +201,9 @@ import { IconProp } from '@fortawesome/fontawesome-svg-core';
         if(element==mission){
           this.res = await this.missn.launchMission(mission);
           console.warn(this.res);
-          this.alertMsg="Démarrage en cours";
+          this.showAlert=true;
+          this.alertType="success";
+          this.alertMsg="Démarrage en cours ...";
         }
      });
 

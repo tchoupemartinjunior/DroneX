@@ -1,15 +1,15 @@
 from flask import Flask, jsonify, request, Response
 from flask_cors import CORS
 from flask_sqlalchemy import SQLAlchemy
-import cv2
+#import cv2
 
 import random
 from threading import Thread
 import time
- 
+
 #STATUS CODE : https://flask-api.github.io/flask-api/api-guide/status-codes/
 
-
+mission=""
 drone_lat = 48.01892231026212;
 drone_lng = 0.15759050846099854;
 
@@ -23,16 +23,24 @@ def getStartPosition():
 
 def addMission(db1, Mission):
     data = request.get_json()
-    print(data)
-    print(data['itinerary'])
-    #perform actions
-    # Add a new user
+    print(data['itinerary']['destinations'])
+    # Delete all existing missions
+    Mission.query.delete()
+    # Add one mission at a time
     new_mission = Mission(start= str(data['itinerary']['start']), destination= str(data['itinerary']['destinations']))
     db1.session.add(new_mission)
     db1.session.commit()
     response = {"ok": True, "mission":data}
     return jsonify(response)
 
+def get_all_missions(Mission):
+    missions = Mission.query.all()
+    response = {'missions': []}
+    for mission in missions:
+        response['missions'].append({
+            'id': mission.id
+        })
+    return jsonify(response)
 
 def launchMission():
     #action = request.args.get('launch')
@@ -53,7 +61,7 @@ def quickAction():
         response = {"action":"land", "response":"ok"}
         #perform actions
         return jsonify(response)
-    
+
     elif action=="rth":
         response = {"action":"return_to_home", "response":"ok"}
         #perform actions
