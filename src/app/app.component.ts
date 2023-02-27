@@ -136,6 +136,7 @@ import { IconProp } from '@fortawesome/fontawesome-svg-core';
     }
 
     onChosenLocation($event: any): any {
+      this.parseArray();
       let droneMeanSpeed = 40; //km/h
       //this.markers.shift(); // keep atmost 2 markers on the map
       let chosen_lat = $event.coords.lat;
@@ -270,8 +271,27 @@ import { IconProp } from '@fortawesome/fontawesome-svg-core';
     onDismissSendAlert() {
       this.showSendAlert = false;
     }
+      parseArray(){
+        let array= {
+          "missions": [
+              {
+                  "destination": "[[48.01892231026212, 0.15759050846099854], [48.02789466930072, 0.13882074505090714], [48.022757034490446, 0.13946447521448135], [48.02353201778885, 0.1537982001900673]]",
+                  "id": 1,
+                  "start": "[48.01892231026212, 0.15759050846099854]"
+              }
+          ]
+      }
+      array['missions'].forEach(mission => {
+        mission.destination = JSON.parse(mission.destination).map((coord: string[]) => coord.map(parseFloat));
+        mission.start = JSON.parse(mission.start).map(parseFloat);
+        console.log(mission.destination)
+      });
 
+
+      }
   }
+
+
 
   interface IMission{
     start:number[];

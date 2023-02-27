@@ -38,7 +38,9 @@ def get_all_missions(Mission):
     response = {'missions': []}
     for mission in missions:
         response['missions'].append({
-            'id': mission.id
+            'id': mission.id,
+            'start':mission.start,
+            'destination':mission.destination
         })
     return jsonify(response)
 

@@ -22,7 +22,7 @@ export class MissionService {
 }
 
   public async sendMissionInfo(itinerary:any){
-
+    console.log(itinerary)
     try{
       const result = await this.http.post(this.API_ROOT_URL+'api/mission', {itinerary}).toPromise();
       return result;

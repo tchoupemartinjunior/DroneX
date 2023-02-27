@@ -29,14 +29,14 @@ class Mission(db.Model):
     destination = db.Column(db.String(1000), nullable=False)
 
     def __repr__(self):
-        return f'<Mission {self.start}>'
+        return f'<Mission start: {self.start}, destinations:{self.destination}>'
 
 class DroneData(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     batteryVoltage = db.Column(db.Float)
-    # heading=db.Column(db.Float)
-    # pitch=db.Column(db.Float)
-    # roll=db.Column(db.Float)
+    heading=db.Column(db.Float)
+    pitch=db.Column(db.Float)
+    roll=db.Column(db.Float)
 
     def __repr__(self):
         return f'<Mission {self.batteryVoltage}>'
@@ -100,7 +100,7 @@ def addMission():
 # get all the misions
 @app.route('/api/mission', methods=['GET'])
 def get_all_missions():
-    return missionService.get_all_missions()
+    return missionService.get_all_missions(Mission)
 
 # launch a mission
 @app.route('/api/mission/launch', methods=['POST'])
