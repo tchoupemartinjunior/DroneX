@@ -12,7 +12,7 @@ export class WebSocketService {
   constructor(private http: HttpClient) {}
 
 
-  public async iniServerSocket(){
+  public async initServer(){
 
     try{
       const data = await this.http.get(environment.SERVER_IP_ADDRESS+'api/connection').toPromise();
